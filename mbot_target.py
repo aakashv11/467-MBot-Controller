@@ -23,7 +23,6 @@ def check_center_color(im, center_x, center_y):
     if not BLACK_LIM > im[center_y][center_x]:
         return False
     # Make sure up, left, down , right are black
-
     if not BLACK_LIM > im[center_y-2][center_x]:
         return False
     if not BLACK_LIM > im[center_y+2][center_x]:
@@ -58,7 +57,7 @@ def line_intersect(m1, b1, m2, b2):
     y = m1*x+b1
     return x,y
 
-def best_fit_slope_and_intercept(xs,ys):
+def best_fit(xs,ys):
     mean_xs = np.mean(xs)
     mean_ys = np.mean(ys)
     m = (((mean_xs*mean_ys) - np.mean(xs*ys))/
@@ -181,8 +180,8 @@ def check_candidate(im, start_row, start_col):
     hor_ys = [coord[1] for coord in horizontal_line_pts]
     
     # Determine lines of best fit for vertical and horizontal lines
-    v_m, v_b = best_fit_slope_and_intercept(np.array(vert_xs), np.array(vert_ys))
-    h_m, h_b = best_fit_slope_and_intercept(np.array(hor_xs), np.array(hor_ys))
+    v_m, v_b = best_fit(np.array(vert_xs), np.array(vert_ys))
+    h_m, h_b = best_fit(np.array(hor_xs), np.array(hor_ys))
     
     # Parallel
     if h_m == v_m:
