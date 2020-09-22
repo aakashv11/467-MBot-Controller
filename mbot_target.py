@@ -16,35 +16,36 @@ TURN_PWM_CMD = 0.3
 NUM_ROWS = 640
 NUM_COLS = 480
 BLACK_LIM = 50
-WHITE_LIM = 90
+WHITE_LIM = 100
 
 def check_center_color(im, center_x, center_y):
      # Make sure center is black
     if not BLACK_LIM > im[center_y][center_x]:
         return False
+    
     # Make sure up, left, down , right are black
-    if not BLACK_LIM > im[center_y-3][center_x]:
+    if not BLACK_LIM > im[center_y-1][center_x]:
         return False
-    if not BLACK_LIM > im[center_y+3][center_x]:
+    if not BLACK_LIM > im[center_y+1][center_x]:
         return False
-    if not BLACK_LIM > im[center_y][center_x-3]:
+    if not BLACK_LIM > im[center_y][center_x-1]:
         return False
-    if not BLACK_LIM > im[center_y][center_x+3]:
+    if not BLACK_LIM > im[center_y][center_x+1]:
         return False
-
+    
 
     #Check contrast:
     # Check up and left
-    if not (WHITE_LIM < im[center_y-5][center_x-5]):
+    if not (WHITE_LIM < im[center_y-6][center_x-6]):
         return False
     # check up and right
-    if not (WHITE_LIM < im[center_y+5][center_x-5]):
+    if not (WHITE_LIM < im[center_y+6][center_x-6]):
         return False
     # Check down and left
-    if not (WHITE_LIM < im[center_y-5][center_x+5]):
+    if not (WHITE_LIM < im[center_y-6][center_x+6]):
         return False
     #Check down and right
-    if not (WHITE_LIM < im[center_y+5][center_x+5]):
+    if not (WHITE_LIM < im[center_y+6][center_x+6]):
         return False
 
     return True
@@ -70,6 +71,7 @@ def find_horizontal_line(im, row_lims, col_lims):
     pts = []
     for row in range(row_lims[0], row_lims[1], 2):
         for col in range(col_lims[0], col_lims[1], 1):
+            # IF the pixel can be considered black
             if BLACK_LIM > im[row][col]:
                 pts.append((col, row))
     return pts
@@ -148,8 +150,8 @@ def check_candidate(im, image, start_row, start_col):
     # Check whether it is at least 20 pixels long
     if(horizontal_line_pts[-1][1] - horizontal_line_pts[0][1] < 20):
         return invalid
-    #else:
-    cv2.line(image, horizontal_line_pts[0], horizontal_line_pts[-1], (0, 255, 0), 2)
+   
+    #cv2.line(image, horizontal_line_pts[0], horizontal_line_pts[-1], (0, 255, 0), 2)
     
     row_lims = [horizontal_line_pts[0][1], horizontal_line_pts[-1][1]]
     col_lims = [horizontal_line_pts[0][0] - 5, horizontal_line_pts[0][0] + 5]
@@ -163,8 +165,8 @@ def check_candidate(im, image, start_row, start_col):
     # Check whether it is of required length
     if(vertical_line_pts[-1][0] - vertical_line_pts[0][0] < 20):
         return invalid
-    #else:
-    cv2.line(image, vertical_line_pts[0], vertical_line_pts[-1], (0, 0, 255), 2)
+    
+    #cv2.line(image, vertical_line_pts[0], vertical_line_pts[-1], (0, 0, 255), 2)
     
     #Get x,y coords on vertical line
     vert_xs = [coord[0] for coord in vertical_line_pts]
@@ -216,7 +218,7 @@ def check_candidate(im, image, start_row, start_col):
 def search_full_image(image, full_image):
     rows, cols = image.shape
     targets = []
-    for row in range(0, rows-6, 4):
+    for row in range(0, rows-6, 3):
         for col in range(0, cols - 5, 3):
             # Candidate target
             if BLACK_LIM > image[row][col]:
@@ -226,7 +228,7 @@ def search_full_image(image, full_image):
     return targets
 
 
-def search_partial_image(image, row_lims, col_lims):
+def search_partial_image(image, image_full, row_lims, col_lims):
     start_row, end_row = row_lims[0], row_lims[1]
     start_col, end_col = col_lims[0], col_lims[1]
     targets = []
@@ -234,7 +236,7 @@ def search_partial_image(image, row_lims, col_lims):
         for col in range(start_col, end_col, 2):
             # Candidate target
             if BLACK_LIM > image[row][col]:
-                center = check_candidate(image, row, col)
+                center = check_candidate(image, image_full, row, col)
                 if center != [-1,-1]:
                     targets.append(center)
     return targets
@@ -270,12 +272,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     image = cv2.flip(image, -1)
 
     image_grey = image.mean(2)
-    centers = search_full_image(image_grey, image)
-    """
-    if counter % (2 * camera.framerate) == 0:
+   
+    if counter % (2 * camera.framerate) == 0 or len(centers) == 0:
         centers = []
         time_before = time.time()
-        centers = search_full_image(image_grey)
+        centers = search_full_image(image_grey, image)
         print(time.time() - time_before)
     elif counter % 3 == 0:
         new_centers = []
@@ -283,13 +284,12 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
             # Construct search frame
             row_lims, col_lims = construct_search_frame(center)
             # Search for new center in search frame
-            new_center = search_partial_image(image_grey, row_lims, col_lims)
+            new_center = search_partial_image(image_grey, image, row_lims, col_lims)
             if len(new_center) > 0:
                 new_centers.append(new_center[0])
             centers = []
             centers.extend(new_centers)
-    """
-    #draw_centers(image, centers)
+    draw_centers(image, centers)
 
     image = pygame.surfarray.make_surface(image)
     screen.blit(image, (0,0))
