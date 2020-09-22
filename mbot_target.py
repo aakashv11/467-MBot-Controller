@@ -130,17 +130,13 @@ def check_candidate(im, image, start_row, start_col):
     invalid = [-1,-1]
 
     #too far right to work
-    if start_row + 30 >= rows or start_row - 20 < 0:
+    if start_row - 20 < 0 or start_row + 30 >= rows:
         return invalid
 
     # Too high or low
     if start_col - 5 < 0 or start_col + 5 >= cols:
         return invalid
-    
-    # Make sure pixels above start are not too dark, look for contrast
-    if not WHITE_LIM < im[start_row][start_col - 5]:
-        return invalid
-    
+
     row_lims = [start_row - 20, start_row + 30]
 
     col_lims = [start_col - 3, start_col+4]
@@ -157,7 +153,6 @@ def check_candidate(im, image, start_row, start_col):
    
     #cv2.line(image, horizontal_line_pts[0], horizontal_line_pts[-1], (0, 255, 0), 2)
     
-
     row_lims = [horizontal_line_pts[0][1], horizontal_line_pts[-1][1]]
     col_lims = [horizontal_line_pts[0][0] - 5, horizontal_line_pts[0][0] + 5]
 
@@ -316,6 +311,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         ang_velocity -= 1.0
     if key_input[pygame.K_DOWN]:
         fwd_velocity -= 1.0
+
     counter = counter+1
     command = simple_motor_command_t.simple_motor_command_t()
     command.forward_velocity =  fwd_velocity 
