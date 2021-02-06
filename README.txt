@@ -6,7 +6,7 @@
 *    mobile robot controller
 *   
 *
-*    Solution written by Aakash Venkatesan
+*    Solution written by Aakash Venkatesan, Haomeng Zhang, Yixuan Wang
 *******************************************************************************/
 
 bin/			      : Binaries folder
