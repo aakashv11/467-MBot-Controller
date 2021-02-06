@@ -5,8 +5,8 @@
 *    This code is a template for completing a fully featured
 *    mobile robot controller
 *   
-*    Functions that need completing are marked with "TODO:"
 *
+*    Solution created by Aakash Venkatesan
 *******************************************************************************/
 
 bin/			      : Binaries folder
