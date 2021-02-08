@@ -194,23 +194,3 @@ void publish_encoder_msg(){
     encoder_msg_old = encoder_msg;
 }
 
-void print_answers()
-{
-    /// Question 1:
-    /// When you give your motors the same PWM command does the robot 
-    /// move straight? Why not? What could be the reason for that? 
-    /// How can we fix that?
-    printf("Answer 1:\n Depending on the polarity setting of the left and right motors and their respective \
-         encoders, the robot will move forward with the same PWM command. If the polarity of the motors is \
-         the same and correct, the robot should move forward. If the polarities of the motors are opposite, the \
-         wheels will move in opposite directions and the robot will turn. \n");
-
-    /// Question 2:
-    /// What could be some uses of logs in our project? why would we 
-    /// want to play logs at different speeds?
-    printf("Answer 2:\n Logs will allow is to observe the behavior of the robot after receiving a set list of commands, \
-        allowing for easier debugging of the robot. We can replay these same commands to verify that the robot is working \
-        as expected. Playing logs at different speeds will allow us to see how the robot reacts to each individual command \
-        a delay, and will also allow us to see how our robot behaves when receiving these commands in real time. \n");
-
-}
