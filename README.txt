@@ -19,3 +19,6 @@ common/mb_odometry.c/.h	      : Odometry and dead reckoning
 lcmtypes/                     : lcmtypes for Mobilebot
 java/                         : java build folder for lcmtypes for lcm-spy
 setenv.sh                     : sets up java PATH variables for lcm-spy (run with: source setenv.sh)
+
+
+python/mbot_tracking.py contains original heuristic to track '+' shaped object in a video stream, developed by Aakash Venkatesan
